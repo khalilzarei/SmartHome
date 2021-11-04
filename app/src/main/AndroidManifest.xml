@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.khz.smarthome">
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission
+        android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
+        tools:ignore="ProtectedPermissions" />
+
+    <!-- Permissions the Application Requires -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <application
+        android:name=".application.App"
+        android:allowBackup="true"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:screenOrientation="landscape"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.SmartHome.NoActionBar"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="m">
+        <activity
+            android:name=".mdns.DNSSDActivity"
+            android:exported="true"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".ui.setting.SettingActivity"
+            android:exported="true"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".ui.storage.StorageActivity"
+            android:exported="true"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".ui.home.HomeActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".ui.exam.PahoExampleActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".ui.intro.WelcomeActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".ui.login.LoginActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".ui.main.MainActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".ui.splash.SplashActivity"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity> <!-- Mqtt Service -->
+        <service android:name="org.eclipse.paho.android.service.MqttService" />
+    </application>
+
+</manifest>

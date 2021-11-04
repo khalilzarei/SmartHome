@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.khz.smarthome.ui.main.MainViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rootLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layoutDirection="ltr"
+        tools:context=".ui.main.MainActivity">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imageView"
+                setImageUrl="@{viewModel.imageUrl}"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_launcher_background"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <RelativeLayout
+                android:id="@+id/container"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardRoom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            app:cardBackgroundColor="@color/yellow"
+            app:cardCornerRadius="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:padding="3dp"
+                android:visibility="@{viewModel.roomDefault!=null?0:8}"
+                app:cardBackgroundColor="@color/black"
+                app:cardCornerRadius="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="@{viewModel.roomDefault.name}"
+                    android:textColor="@color/yellow"
+                    tools:text="Room" />
+            </androidx.cardview.widget.CardView>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewRooms"
+            setRoomItems="@{viewModel.rooms}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="7dp"
+            android:padding="2dp"
+            android:visibility="@{viewModel.showRooms?0:8}"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@+id/cardShowRoom"
+            app:layout_constraintEnd_toEndOf="@+id/cardShowRoom"
+            tools:itemCount="5"
+            tools:listitem="@layout/item_row_room" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardShowRoom"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:onClick="@{viewModel::showRoomList}"
+            android:visibility="@{viewModel.roomDefault!=null?0:8}"
+            app:cardBackgroundColor="@color/yellow"
+            app:cardCornerRadius="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                app:cardBackgroundColor="@color/black"
+                app:cardCornerRadius="20dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/recyclerViewRooms"
+                app:layout_constraintStart_toStartOf="@+id/recyclerViewRooms">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:rotation="@{viewModel.showRooms?25:0}"
+                    android:src="@drawable/ic_rooms" />
+            </androidx.cardview.widget.CardView>
+        </androidx.cardview.widget.CardView>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewScene"
+            setSceneItems="@{viewModel.scenes}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="7dp"
+            android:padding="2dp"
+            android:visibility="@{viewModel.showScenes?0:8}"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@+id/cardShowScene"
+            app:layout_constraintStart_toStartOf="@+id/cardShowScene"
+            tools:itemCount="5"
+            tools:listitem="@layout/item_row_scene" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardShowScene"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:onClick="@{viewModel::showSceneList}"
+            android:visibility="@{viewModel.sceneDefault!=null?0:8}"
+            app:cardBackgroundColor="@color/yellow"
+            app:cardCornerRadius="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                app:cardBackgroundColor="@color/black"
+                app:cardCornerRadius="20dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/recyclerViewRooms"
+                app:layout_constraintStart_toStartOf="@+id/recyclerViewRooms">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:rotation="@{viewModel.showScenes?25:0}"
+                    android:src="@drawable/ic_scenes" />
+            </androidx.cardview.widget.CardView>
+        </androidx.cardview.widget.CardView>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

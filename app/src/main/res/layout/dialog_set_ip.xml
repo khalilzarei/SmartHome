@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dialog_dim_shape"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:text="@string/set_ip_and_project_id"
+        android:textColor="@color/yellow"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+
+    <EditText
+        android:id="@+id/etIP"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/dialog_dim_shape"
+        android:gravity="center"
+        android:hint="@string/set_ip"
+        android:lines="1"
+        android:maxLines="1"
+        android:textColor="@color/yellow"
+        android:textColorHint="#666666" />
+
+    <EditText
+        android:id="@+id/etTopic"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/dialog_dim_shape"
+        android:gravity="center"
+        android:hint="@string/project_id"
+        android:inputType="number"
+        android:lines="1"
+        android:maxLines="1"
+        android:textColor="@color/yellow"
+        android:textColorHint="#666666" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:gravity="bottom"
+        android:orientation="vertical"
+        android:padding="5dp">
+
+        <Button
+            android:id="@+id/btnSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="@string/save"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+
+</LinearLayout>
+
