@@ -138,7 +138,7 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
                 onOffMSG = "{\"masterId\":\"" + device.getdA1() + "\"," +
                         "\"command\":\"setDim\"," +
                         "\"attributes\":{" +
-                        "\"lightID\":\"" + device.getdId() + "\"," +
+                        "\"lightID\":\"" + device.getdA0() + "\"," +
                         "\"type\":\"" + ty + "\"," +
                         "\"dimLevel\":\"" + (device.getDim().equals("0") ? "254" : "0") + "\"" +
                         "}" +
@@ -147,9 +147,9 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
                 onOffMSG = "GetRoom" + device.getdA0();
             } else if (device.getdType().equalsIgnoreCase("curtain")) {
                 if (device.getDim().equalsIgnoreCase("open"))
-                    onOffMSG = "{\"id\":\"" + device.getId() + "\",\"command\":\"close\"}";
+                    onOffMSG = "{\"id\":\"" + device.getdA0() + "\",\"command\":\"close\"}";
                 else if (device.getDim().equalsIgnoreCase("close"))
-                    onOffMSG = "{\"id\":\"" + device.getId() + "\",\"command\":\"open\"}";
+                    onOffMSG = "{\"id\":\"" + device.getdA0() + "\",\"command\":\"open\"}";
 //                topic = "Curtain/In";
             }
             publishMessage(onOffMSG, Constants.DALI_IN);
@@ -258,7 +258,7 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
             imageView.setColorFilter(Color.argb(dim, 255, 255, 0));
             String message = "{\"command\":\"setDim\",\"ID\":\"" + device.getdId() + "\",\"dim\":\"" + dim + "\",\"projectId\":\"" + device.getpId() + "\",\"roomId\":\"" + device.getrId() + "\"}";
             message = "{\"masterId\":" + device.getdA1()
-                    + ",\"command\":\"setDim\",\"attributes\":{\"lightID\":\"" + device.getdId()
+                    + ",\"command\":\"setDim\",\"attributes\":{\"lightID\":\"" + device.getdA0()
                     + "\",\"type\":\"" + device.getdA2()
                     + "\",\"dimLevel\":\"" + dim + "\"}}";
             publishMessage(message, Constants.DALI_IN);
