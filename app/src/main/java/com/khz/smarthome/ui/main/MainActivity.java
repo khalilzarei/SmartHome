@@ -95,7 +95,7 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
             layoutParams.setMarginStart(getRealLeft(device.getL() - 5));
         layoutParams.topMargin = getRealTop(device.getT());
 
-        showLog(" MQTT(L:" + device.getL() + ",T:" + device.getT() + ") REAL(L:" + getRealLeft(device.getL() - 5) + ",T:" + getRealTop(device.getT()) + ")");
+        showLog("Dim : " + device.getDim());
 //        layoutParams.setMargins(getRealLeft(device.getL()), getRealTop(device.getT()), 0, 0);
         layoutParams.width  = 90;
         layoutParams.height = 90;
@@ -156,7 +156,7 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
             vibration();
             playSound();
 
-            Toast.makeText(MainActivity.this, device.getdType() + " - " + device.getDim(), Toast.LENGTH_SHORT)
+            Toast.makeText(MainActivity.this, device.getdType() + " - " + device.getdA0(), Toast.LENGTH_SHORT)
                     .show();
         });
 
@@ -168,7 +168,6 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
             }
             return false;
         });
-        showLog("Add");
     }
 
     private int getRealLeft(double left) {
@@ -391,12 +390,12 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
                     } else if (message.toString().contains("setDim")) {
                         showLog("Message Arrived => Light Click");
                         LightClick lightClick = gson.fromJson(message.toString(), LightClick.class);
+
                         for (Device device : devices) {
-                            if (lightClick.getAttributes().getLightID().equals(device.getdId())) {
+                            if (lightClick.getAttributes().getLightID().equals(device.getdA0())) {
                                 device.setDim(lightClick.getAttributes().getDimLevel());
                             }
                             addView(device);
-                            showLog("messageArrived setDim => " + device.getdType());
                         }
 
                     } else if (message.toString().contains("scanResult")) {
@@ -404,8 +403,8 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
                         for (Device device : devices) {
                             boolean find = false;
                             for (ScanLight scanLight : lightsStatus.getScanResult()) {
-                                if (scanLight.getId().equals(String.valueOf(device.getdId()))) {
-                                    showLog("scanResult -> " + scanLight.getId() + " " + device.getdId());
+                                if (scanLight.getId().equals(String.valueOf(device.getdA0()))) {
+                                    showLog("scanResult -> " + scanLight.getId() + " " + device.getdA0());
                                     device.setDim(scanLight.getDim());
                                     find = true;
                                 }
@@ -461,11 +460,12 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
             if (message.toString().contains("setDim") && message.toString().contains("dimLevel")) {
                 LightClick lightClick = gson.fromJson(message.toString(), LightClick.class);
                 for (Device device : devices) {
-                    if (lightClick.getAttributes().getLightID().equals(device.getdId())) {
+                    showLog("messageArrived setDim => A0: " + device.getdA0() + " - LightID: " + lightClick.getAttributes().getLightID());
+                    if (device.getdA0().equalsIgnoreCase(String.valueOf(lightClick.getAttributes().getLightID()))) {
                         device.setDim(lightClick.getAttributes().getDimLevel());
+                        showLog("messageArrived setDim => " + device.getDim() + " - " + lightClick.getAttributes().getDimLevel());
                     }
                     addView(device);
-                    showLog("messageArrived setDim => " + device.getdType());
                 }
             }
 
