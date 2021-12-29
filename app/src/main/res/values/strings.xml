@@ -147,4 +147,6 @@
     <string name="set_ip_and_project_id">Set IP and Project ID</string>
     <string name="topic">Topic</string>
     <string name="project_id">Project Id</string>
+    <string name="set_title_for_scene">Set title for scene</string>
+    <string name="scene_title">scene title</string>
 </resources>

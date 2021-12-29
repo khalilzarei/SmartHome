@@ -1,6 +1,7 @@
 package com.khz.smarthome.ui.main;
 
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.khz.smarthome.R;
 import com.khz.smarthome.databinding.SceneItem;
+import com.khz.smarthome.helper.SessionManager;
 import com.khz.smarthome.model.Scene;
 
 import java.util.List;
@@ -37,14 +39,22 @@ public class SceneAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        final Scene    scene       = scenes.get(position);
-        ViewHolder    viewHolder = (ViewHolder) holder;
-        SceneViewModel viewModel  = new SceneViewModel(scene);
+        final Scene scene = scenes.get(position);
+        Log.e("Scene", "Scene id: " + scene.getId() + " " + scene.getSi() + " " + scene.getMi() + " " + scene.getName());
+        ViewHolder viewHolder = (ViewHolder) holder;
+        if (SessionManager.getSceneValue(scene.getSi()) != null)
+            scene.setName(SessionManager.getSceneValue(scene.getSi()));
+        SceneViewModel viewModel = new SceneViewModel(scene);
 
         viewHolder.sceneItem.setViewModel(viewModel);
         viewHolder.sceneItem.cardRoom.setOnClickListener(view -> {
             if (sceneClickListener != null)
                 sceneClickListener.onSceneClickListener(scene);
+        });
+        viewHolder.sceneItem.cardRoom.setOnLongClickListener(view -> {
+            if (sceneClickListener != null)
+                sceneClickListener.onSceneLongClickListener(scene);
+            return false;
         });
     }
 
@@ -66,6 +76,8 @@ public class SceneAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public interface SceneClickListener {
         void onSceneClickListener(Scene scene);
+
+        void onSceneLongClickListener(Scene scene);
     }
 
 

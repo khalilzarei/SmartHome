@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -544,5 +545,40 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
         publishMessage(msg, Constants.DALI_IN);
         viewModel.setSceneDefault(scene);
         Toast.makeText(this, "Scene => " + scene.getName(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onSceneLongClickListener(Scene scene) {
+        setSceneTitle(scene);
+    }
+
+    public void setSceneTitle(Scene scene) {
+        AlertDialog.Builder builder      = new AlertDialog.Builder(activity);
+        ViewGroup           viewGroup    = activity.findViewById(android.R.id.content);
+        View                dialogView   = LayoutInflater.from(activity).inflate(R.layout.dialog_scene_title, viewGroup, false);
+        EditText            etSceneTitle = dialogView.findViewById(R.id.etSceneTitle);
+        if (SessionManager.getSceneValue(scene.getSi()) != null)
+            etSceneTitle.setText(SessionManager.getSceneValue(scene.getSi()));
+        builder.setView(dialogView);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        alertDialog.show();
+        dialogView.findViewById(R.id.btnSend).setOnClickListener(view -> {
+            if (etSceneTitle.getText().toString().isEmpty()) {
+                Toast.makeText(activity, "Please Enter Scene Title", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String sceneTitle = etSceneTitle.getText().toString();
+            SessionManager.setSceneValue(scene.getSi(), sceneTitle);
+            alertDialog.dismiss();
+            viewModel.setScenes(null);
+            viewModel.setScenes(scenes);
+
+
+        });
+        dialogView.findViewById(R.id.btnClose).setOnClickListener(view -> {
+            alertDialog.dismiss();
+        });
     }
 }

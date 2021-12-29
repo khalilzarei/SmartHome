@@ -191,6 +191,15 @@ public class SessionManager {
         editor.commit();
     }
 
+    public static String getSceneValue(int key) {
+        return pref.getString("scene" + key, null);
+    }
+
+    public static void setSceneValue(int key, String value) {
+        editor.putString("scene" + key, value);
+        editor.commit();
+    }
+
     public static boolean isNightModeOn() {
         return pref.getBoolean(KEY_IS_NIGHT_MODE, false);
     }

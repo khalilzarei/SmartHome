@@ -1,6 +1,5 @@
 package com.khz.smarthome.model;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Scene {
@@ -18,6 +17,8 @@ public class Scene {
     private Integer mi;
     @SerializedName("si")
     private Integer si;
+
+    private String title;
 
     public Scene(String name, Integer mi, Integer si) {
         this.name = name;
@@ -57,4 +58,11 @@ public class Scene {
         this.si = si;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }
