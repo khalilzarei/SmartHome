@@ -33,17 +33,30 @@ public class SettingViewModel extends BaseObservable {
     Activity activity;
 
     private final UiModeManager uiModeManager;
-    int nightIcon;
-    int ipStatus;
-    int counter = 0;
-
-
-    int iconSize = 60;
+    int   nightIcon;
+    int   ipStatus;
+    int   counter  = 0;
+    int   resId;
+    int[] iconList;
+    int   iconSize = 60;
 
     public SettingViewModel(Activity activity, int nightIcon) {
         this.activity  = activity;
         this.nightIcon = nightIcon;
+        this.resId     = SessionManager.getIconResID();
         uiModeManager  = (UiModeManager) activity.getSystemService(UI_MODE_SERVICE);
+        iconList       = new int[]{
+                R.drawable.ic_lamp_off,
+                R.drawable.ic_lamp_off_one,
+                R.drawable.ic_lamp_off_two,
+                R.drawable.ic_lamp_off_tree,
+                R.drawable.ic_lamp_off_four,
+                R.drawable.ic_lamp_off_five,
+                R.drawable.ic_lamp_off_six,
+                R.drawable.ic_lamp_off_seven,
+                R.drawable.ic_lamp_off_eaght,
+                R.drawable.ic_lamp_off_nine,
+        };
     }
 
 
@@ -67,9 +80,24 @@ public class SettingViewModel extends BaseObservable {
         notifyPropertyChanged(BR.ipStatus);
     }
 
-    @BindingAdapter("setImage")
-    public static void setImage(ImageView imageView, int res) {
+    @BindingAdapter("setIconImage")
+    public static void setIconImage(ImageView imageView, int res) {
         imageView.setImageResource(res);
+    }
+
+    @BindingAdapter("setImageNightDayIcon")
+    public static void setImageNightDayIcon(ImageView imageView, int res) {
+        imageView.setImageResource(res);
+    }
+
+    @Bindable
+    public int getResId() {
+        return resId;
+    }
+
+    public void setResId(int resId) {
+        this.resId = resId;
+        notifyPropertyChanged(BR.resId);
     }
 
     public void showIpButton(View view) {
@@ -199,6 +227,34 @@ public class SettingViewModel extends BaseObservable {
             setIconSize(40);
 
         SessionManager.setIconSize(getIconSize());
+    }
+
+    public void changeIconLeft(View view) {
+        int resId = SessionManager.getIconResID(), index = 0;
+        for (int i = 0; i < iconList.length; i++) {
+            int id = iconList[i];
+            if (id == resId)
+                index = i;
+        }
+        index++;
+        if (index >= iconList.length)
+            index = 0;
+        setResId(iconList[index]);
+        SessionManager.setIconResID(iconList[index]);
+    }
+
+    public void changeIconRight(View view) {
+        int resId = SessionManager.getIconResID(), index = 0;
+        for (int i = 0; i < iconList.length; i++) {
+            int id = iconList[i];
+            if (id == resId)
+                index = i;
+        }
+        index--;
+        if (index < 0)
+            index = iconList.length - 1;
+        setResId(iconList[index]);
+        SessionManager.setIconResID(iconList[index]);
     }
 
     private void reOpenActivity() {

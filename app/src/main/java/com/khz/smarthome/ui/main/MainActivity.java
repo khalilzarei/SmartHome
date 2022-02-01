@@ -94,6 +94,7 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
     }
 
     private void addView(Device device) {
+        int lampIconId = SessionManager.getIconResID();
 
         final ImageView               imageView    = new ImageView(MainActivity.this);
         ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
@@ -112,7 +113,7 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
         int imgRes = R.drawable.ic_room;
         if (device.getdType().equalsIgnoreCase("Dali Light")) {
             showLog("Dali Light Dim : " + device.getDim());
-            imgRes = R.drawable.ic_lamp_off;
+            imgRes = lampIconId;
             if (device.getDim().equals("0"))
                 imageView.setColorFilter(Color.argb(50, 255, 255, 0));
             else
@@ -129,7 +130,7 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
             String onOffMSG = "";
             if (device.getdType().equalsIgnoreCase("Dali Light")) {
                 int dim;
-                imageView.setImageResource((R.drawable.ic_lamp_off));
+                imageView.setImageResource(lampIconId);
                 if (device.getDim().equals("0")) {
                     showLog("off");
                     dim = 50;
@@ -247,14 +248,22 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
 //                Toast.makeText(activity, "seekbar progress: " + progress, Toast.LENGTH_SHORT).show();
             }
 
+
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
 //                Toast.makeText(activity, "seekbar touch started!", Toast.LENGTH_SHORT).show();
+                Log.e("onStopTrackingTouch", "onStartTrackingTouch Dim : " + dim);
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-//                Toast.makeText(activity, "seekbar touch stopped!", Toast.LENGTH_SHORT).show();
+                dim = seekBar.getProgress();
+                Log.e("onStopTrackingTouch", "Dim : " + dim);
+                String message = "{\"masterId\":" + device.getdA1()
+                        + ",\"command\":\"setDim\",\"attributes\":{\"lightID\":\"" + device.getdA0()
+                        + "\",\"type\":\"" + device.getdA2()
+                        + "\",\"dimLevel\":\"" + dim + "\"}}";
+                publishMessage(message, Constants.DALI_IN);
             }
 
         });

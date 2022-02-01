@@ -1,13 +1,16 @@
 package com.khz.smarthome.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
+import android.widget.SeekBar;
 
-public class VerticalSeekBar extends androidx.appcompat.widget.AppCompatSeekBar {
+@SuppressLint("AppCompatCustomView")
+public class VerticalSeekBar extends SeekBar {
 
+    private OnSeekBarChangeListener myListener;
     public VerticalSeekBar(Context context) {
         super(context);
     }
@@ -30,9 +33,14 @@ public class VerticalSeekBar extends androidx.appcompat.widget.AppCompatSeekBar 
         setMeasuredDimension(getMeasuredHeight(), getMeasuredWidth());
     }
 
+    @Override
+    public void setOnSeekBarChangeListener(OnSeekBarChangeListener mListener){
+        this.myListener = mListener;
+    }
+
     protected void onDraw(Canvas c) {
         c.rotate(-90);
-        c.translate(-getHeight(),0);
+        c.translate(-getHeight(), 0);
 
         super.onDraw(c);
     }
@@ -45,13 +53,16 @@ public class VerticalSeekBar extends androidx.appcompat.widget.AppCompatSeekBar 
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                if(myListener!=null)
+                    myListener.onStartTrackingTouch(this);
+                break;
             case MotionEvent.ACTION_MOVE:
-            case MotionEvent.ACTION_UP:
-            	int i=0;
-            	i=getMax() - (int) (getMax() * event.getY() / getHeight());
-                setProgress(i);
-                Log.i("Progress",getProgress()+"");
+                setProgress(getMax() - (int) (getMax() * event.getY() / getHeight()));
                 onSizeChanged(getWidth(), getHeight(), 0, 0);
+                myListener.onProgressChanged(this, getMax() - (int) (getMax() * event.getY() / getHeight()), true);
+                break;
+            case MotionEvent.ACTION_UP:
+                myListener.onStopTrackingTouch(this);
                 break;
 
             case MotionEvent.ACTION_CANCEL:
@@ -59,5 +70,4 @@ public class VerticalSeekBar extends androidx.appcompat.widget.AppCompatSeekBar 
         }
         return true;
     }
-
 }

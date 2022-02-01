@@ -15,8 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/background"
-        android:padding="16dp"
-        tools:context=".ui.setting.SettingActivity">
+        android:padding="16dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout2"
@@ -134,7 +133,7 @@
 
                     <ImageView
                         android:id="@+id/ivNight"
-                        setImage="@{viewModel.nightIcon}"
+                        setImageNightDayIcon="@{viewModel.nightIcon}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="7dp"
@@ -211,76 +210,122 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout4"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/constraintLayout2"
             app:layout_constraintTop_toTopOf="parent">
 
-            <LinearLayout
+            <androidx.cardview.widget.CardView
                 android:id="@+id/linearLayout3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="300dp"
+                android:layout_height="0dp"
                 android:layout_margin="15dp"
+                app:cardBackgroundColor="@color/background"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="10dp"
+                app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <LinearLayout
-                    android:id="@+id/ivUp"
-                    android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_margin="15dp"
-                    android:gravity="center"
-                    android:orientation="vertical">
+                    android:background="@drawable/shape">
 
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:onClick="@{viewModel::increaseIconSize}"
-                        android:rotation="90"
-                        android:src="@drawable/ic_arrow_back" />
+                    <LinearLayout
+                        android:id="@+id/ivUp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_margin="5dp"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="@+id/linearLayoutCompat"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/linearLayoutCompat">
 
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:onClick="@{viewModel::decreaseIconSize}"
-                        android:rotation="-90"
-                        android:src="@drawable/ic_arrow_back" />
-                </LinearLayout>
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:onClick="@{viewModel::increaseIconSize}"
+                            android:rotation="90"
+                            android:src="@drawable/ic_arrow_back" />
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:minWidth="200dp"
-                    android:minHeight="200dp">
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:onClick="@{viewModel::decreaseIconSize}"
+                            android:rotation="-90"
+                            android:src="@drawable/ic_arrow_back" />
+                    </LinearLayout>
 
-                    <ImageView
-                        android:id="@+id/imageView2"
-                        setImageSize="@{viewModel.iconSize}"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:src="@drawable/ic_lamp_off"
-                        app:tint="@color/yellow" />
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/linearLayoutCompat"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_margin="10dp"
+                        android:gravity="center"
+                        android:minWidth="100dp"
+                        android:minHeight="100dp"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/ivUp"
+                        app:layout_constraintTop_toTopOf="parent">
 
-                </androidx.appcompat.widget.LinearLayoutCompat>
+                        <ImageView
+                            android:id="@+id/imageView2"
+                            setIconImage="@{viewModel.resId}"
+                            setImageSize="@{viewModel.iconSize}"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:src="@drawable/ic_lamp_off"
+                            app:tint="@color/yellow" />
 
 
-            </LinearLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                    <LinearLayout
+                        android:id="@+id/linearLayout4"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/linearLayoutCompat"
+                        app:layout_constraintStart_toStartOf="@+id/linearLayoutCompat">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:onClick="@{viewModel::changeIconLeft}"
+                            android:src="@drawable/ic_arrow_back" />
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:onClick="@{viewModel::changeIconRight}"
+                            android:rotation="180"
+                            android:src="@drawable/ic_arrow_back" />
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
 
             <LinearLayout
                 android:id="@+id/linearLayout2"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_height="70dp"
                 android:layout_marginTop="10dp"
+                android:background="@color/border"
                 android:onClick="@{viewModel::showIpButton}"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+                app:layout_constraintStart_toStartOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
