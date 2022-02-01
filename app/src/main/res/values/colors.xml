@@ -36,7 +36,10 @@
     <color name="dot_light_screen2">#ffff00</color>
     <color name="dot_light_screen3">#ffff00</color>
     <color name="dot_light_screen4">#ffff00</color>
-    <color name="background">#001312</color>
+    <color name="background">#001212</color>
+    <color name="back_black">#001212</color>
+    <color name="border">#018786</color>
+    <color name="text_color">#ffffff</color>
 
     <array name="array_dot_active">
         <item>@color/dot_light_screen1</item>

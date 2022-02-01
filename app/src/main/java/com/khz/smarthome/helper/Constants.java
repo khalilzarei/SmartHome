@@ -11,7 +11,7 @@ final public class Constants {
     public static final String DB_NAME          = "SmartHome.db";
 
 
-    public static final String MQTT_SERVER_URI = "tcp://158.255.74.143:1883";
+    public static final String MQTT_SERVER_URI = "tcp://164.90.168.40:1883";
 
     //MQTT
     public static final String clientId          = "ExampleAndroidClient";

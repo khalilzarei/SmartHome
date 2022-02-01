@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.databinding.BindingAdapter;
@@ -35,6 +36,9 @@ public class SettingViewModel extends BaseObservable {
     int nightIcon;
     int ipStatus;
     int counter = 0;
+
+
+    int iconSize = 60;
 
     public SettingViewModel(Activity activity, int nightIcon) {
         this.activity  = activity;
@@ -171,11 +175,47 @@ public class SettingViewModel extends BaseObservable {
         reOpenActivity();
     }
 
+    @BindingAdapter("setImageSize")
+    public static void setImageSize(ImageView imageView, int size) {
+        LinearLayoutCompat.LayoutParams layoutParams = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+        layoutParams.width  = size;
+        layoutParams.height = size;
+        imageView.setLayoutParams(layoutParams);
+    }
+
+    public void increaseIconSize(View view) {
+        if (iconSize < 100)
+            setIconSize(iconSize += 10);
+        else
+            setIconSize(100);
+
+        SessionManager.setIconSize(getIconSize());
+    }
+
+    public void decreaseIconSize(View view) {
+        if (iconSize > 40)
+            setIconSize(iconSize -= 10);
+        else
+            setIconSize(40);
+
+        SessionManager.setIconSize(getIconSize());
+    }
+
     private void reOpenActivity() {
         Intent intent = activity.getIntent();
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         activity.finish();
         activity.startActivity(intent);
         App.getInstance().onCreate();
+    }
+
+    @Bindable
+    public int getIconSize() {
+        return iconSize;
+    }
+
+    public void setIconSize(int iconSize) {
+        this.iconSize = iconSize;
+        notifyPropertyChanged(BR.iconSize);
     }
 }

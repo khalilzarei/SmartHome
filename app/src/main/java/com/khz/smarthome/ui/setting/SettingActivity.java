@@ -20,6 +20,7 @@ public class SettingActivity extends BaseActivity {
         binding   = DataBindingUtil.setContentView(this, R.layout.activity_setting);
         viewModel = new SettingViewModel(this, SessionManager.isNightModeOn() ? R.drawable.ic_night : R.drawable.ic_day);
         binding.setViewModel(viewModel);
+        viewModel.setIconSize(SessionManager.getIconSize());
         viewModel.setIpStatus(SessionManager.getIpStatus());
         binding.checkBoxSound.setChecked(SessionManager.getPlaySound());
         binding.checkBoxSound.setOnCheckedChangeListener(

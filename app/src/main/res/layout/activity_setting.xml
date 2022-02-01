@@ -25,38 +25,92 @@
             android:background="@color/background"
             android:padding="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/constraintLayout4"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:context=".ui.setting.SettingActivity">
 
-            <CheckBox
-                android:id="@+id/checkBoxSound"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/play_sound"
-                android:textColor="@color/yellow"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/checkBoxVibration"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
-            <CheckBox
-                android:id="@+id/checkBoxVibration"
-                android:layout_width="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutVibrationSound"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/vibration"
-                android:textColor="@color/yellow"
-                android:textSize="18sp"
-                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/cardView3"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/checkBoxSound"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toStartOf="parent">
 
+                <CheckBox
+                    android:id="@+id/checkBoxSound"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/play_sound"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/checkBoxVibration"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <CheckBox
+                    android:id="@+id/checkBoxVibration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/vibration"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/checkBoxSound"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:onClick="@{viewModel::chooseFont}"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="10dp"
+                app:layout_constraintBottom_toTopOf="@+id/cardView2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="7dp"
+                        android:src="@drawable/ic_font"
+                        app:tint="@color/black" />
+
+                    <TextView
+                        android:id="@+id/textView1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="7dp"
+                        android:text="@string/choose_font"
+                        android:textColor="@color/black"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView2"
@@ -71,23 +125,20 @@
                 app:cardElevation="10dp"
                 app:layout_constraintBottom_toTopOf="@+id/cardView5"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/cardView3"
-                app:layout_constraintTop_toBottomOf="@+id/checkBoxVibration">
+                app:layout_constraintStart_toStartOf="parent">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:gravity="center">
 
                     <ImageView
+                        android:id="@+id/ivNight"
                         setImage="@{viewModel.nightIcon}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="7dp"
                         android:src="@drawable/ic_day"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/textView5"
-                        app:layout_constraintTop_toTopOf="parent"
                         app:tint="@color/black" />
 
                     <TextView
@@ -99,63 +150,9 @@
                         android:text="@string/day_or_night"
                         android:textColor="@color/black"
                         android:textSize="22sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:textStyle="bold" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardView3"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="15dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:onClick="@{viewModel::chooseFont}"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="10dp"
-                app:layout_constraintBottom_toTopOf="@+id/cardView5"
-                app:layout_constraintEnd_toStartOf="@+id/cardView2"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/checkBoxVibration">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="7dp"
-                        android:src="@drawable/ic_font"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/textView1"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:tint="@color/black" />
-
-                    <TextView
-                        android:id="@+id/textView1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_margin="7dp"
-                        android:text="@string/choose_font"
-                        android:textColor="@color/black"
-                        android:textSize="22sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
 
             </androidx.cardview.widget.CardView>
 
@@ -175,9 +172,10 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:gravity="center"
                     android:visibility="@{viewModel.ipStatus}">
 
                     <ImageView
@@ -205,18 +203,87 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <LinearLayout
-            android:layout_width="150dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout4"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:onClick="@{viewModel::showIpButton}"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/constraintLayout2"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:id="@+id/linearLayout3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:id="@+id/ivUp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_margin="15dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:onClick="@{viewModel::increaseIconSize}"
+                        android:rotation="90"
+                        android:src="@drawable/ic_arrow_back" />
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:onClick="@{viewModel::decreaseIconSize}"
+                        android:rotation="-90"
+                        android:src="@drawable/ic_arrow_back" />
+                </LinearLayout>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:minWidth="200dp"
+                    android:minHeight="200dp">
+
+                    <ImageView
+                        android:id="@+id/imageView2"
+                        setImageSize="@{viewModel.iconSize}"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:src="@drawable/ic_lamp_off"
+                        app:tint="@color/yellow" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout2"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:onClick="@{viewModel::showIpButton}"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

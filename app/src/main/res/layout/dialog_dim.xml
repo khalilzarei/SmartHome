@@ -1,90 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/dialog_dim_shape"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:padding="10dp">
 
+    <com.khz.smarthome.view.VerticalSeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="25dp"
+        android:layout_height="250dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="15dp"
+        android:max="255"
+        android:maxWidth="5dp"
+        android:maxHeight="10dp"
+        android:minWidth="5dp"
+        android:minHeight="10dp"
+        android:progress="100"
+        android:progressDrawable="@drawable/custom_seekbar"
+        android:splitTrack="false"
+        android:thumb="@drawable/custom_thumb" />
 
-    <TextView
-        android:id="@+id/txt_dia"
+    <LinearLayout
+        android:id="@+id/layout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="10dp"
-        android:text="Please select dim"
-        android:textColor="@android:color/white"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="250dp"
+        android:layout_alignParentEnd="true"
+        android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:gravity="center"
-        android:orientation="horizontal">
 
-        <SeekBar
-            android:id="@+id/seekBar"
-            android:layout_width="0dp"
-            android:layout_height="25dp"
-            android:layout_weight="1"
-            android:max="255"
-            android:maxWidth="5dp"
-            android:maxHeight="10dp"
-            android:minWidth="5dp"
-            android:minHeight="10dp"
-            android:progress="100"
-            android:progressDrawable="@drawable/custom_seekbar"
-            android:splitTrack="false"
-            android:thumb="@drawable/custom_thumb" />
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            app:cardBackgroundColor="@color/yellow"
-            app:cardCornerRadius="30dp">
-
-            <TextView
-                android:id="@+id/tvDim"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="255"
-                android:textColor="#212121"
-                android:textStyle="bold" />
-        </androidx.cardview.widget.CardView>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:gravity="bottom"
-        android:orientation="vertical"
-        android:padding="10dp">
-
-        <Button
-            android:id="@+id/btnSend"
+        <TextView
+            android:id="@+id/txt_dia"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:backgroundTint="@color/yellow"
-            android:clickable="true"
-            android:focusable="true"
-            android:text="@string/set_dim"
-            android:textColor="@color/black"
+            android:layout_margin="10dp"
+            android:text="Please select dim"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_horizontal">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="bottom"
+                app:cardBackgroundColor="@color/yellow"
+                app:cardCornerRadius="30dp"
+                app:layout_constraintBottom_toTopOf="@+id/btnSend"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_dia">
+
+                <TextView
+                    android:id="@+id/tvDim"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="255"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_horizontal">
+
+            <Button
+                android:id="@+id/btnSend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_margin="3dp"
+                android:background="@drawable/button_shape"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="@string/set_dim"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                app:backgroundTint="@null"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </LinearLayout>
     </LinearLayout>
 
 
-</LinearLayout>
+</RelativeLayout>
 

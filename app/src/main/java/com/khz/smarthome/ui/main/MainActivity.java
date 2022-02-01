@@ -1,12 +1,15 @@
 package com.khz.smarthome.ui.main;
 
+import android.app.DownloadManager;
 import android.content.Context;
-import android.content.res.ColorStateList;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
@@ -53,9 +56,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickListener, SceneAdapter.SceneClickListener {
 
@@ -89,6 +94,7 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
     }
 
     private void addView(Device device) {
+
         final ImageView               imageView    = new ImageView(MainActivity.this);
         ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.setMarginStart(getRealLeft(device.getL()));
@@ -98,19 +104,20 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
 
         showLog("Dim : " + device.getDim());
 //        layoutParams.setMargins(getRealLeft(device.getL()), getRealTop(device.getT()), 0, 0);
-        layoutParams.width  = 90;
-        layoutParams.height = 90;
+        layoutParams.width  = SessionManager.getIconSize();
+        layoutParams.height = SessionManager.getIconSize();
 
         imageView.setLayoutParams(layoutParams);
+
         int imgRes = R.drawable.ic_room;
-        if (device.getdType().equalsIgnoreCase("Dali Light"))
+        if (device.getdType().equalsIgnoreCase("Dali Light")) {
+            showLog("Dali Light Dim : " + device.getDim());
+            imgRes = R.drawable.ic_lamp_off;
             if (device.getDim().equals("0"))
-                imgRes = R.drawable.ic_lamp_off;
-            else {
-                imgRes = R.drawable.ic_lamp_on;
+                imageView.setColorFilter(Color.argb(50, 255, 255, 0));
+            else
                 imageView.setColorFilter(Color.argb(Integer.parseInt(device.getDim()), 255, 255, 0));
-            }
-        else if (device.getdType().equalsIgnoreCase("Room"))
+        } else if (device.getdType().equalsIgnoreCase("Room"))
             imgRes = R.drawable.ic_room;
         else if (device.getdType().equalsIgnoreCase("curtain"))
             imgRes = R.drawable.ic_curtain;
@@ -121,15 +128,17 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
         imageView.setOnClickListener(v -> {
             String onOffMSG = "";
             if (device.getdType().equalsIgnoreCase("Dali Light")) {
+                int dim;
+                imageView.setImageResource((R.drawable.ic_lamp_off));
                 if (device.getDim().equals("0")) {
                     showLog("off");
-                    imageView.setImageResource((R.drawable.ic_lamp_on));
-                    imageView.setImageTintList(ColorStateList.valueOf(Color.parseColor("#FFFF00")));
+                    dim = 50;
                 } else {
                     showLog("on");
-                    imageView.setImageResource((R.drawable.ic_lamp_off));
-                    imageView.setImageTintList(ColorStateList.valueOf(Color.parseColor("#000000")));
+                    dim = 255;
                 }
+
+                imageView.setColorFilter(Color.argb(dim, 255, 255, 0));
                 String ty = "ID";
                 if (device.getdA2().equalsIgnoreCase("single"))
                     ty = "ID";
@@ -200,7 +209,7 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
     /*
     1024   100
     x       15
-     */
+    */
 
     public int getHeightSize() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -215,6 +224,7 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
     }
 
     public void showDimDialog(Device device, ImageView imageView) {
+//        showAlertDialogButtonClicked(device, imageView);
         AlertDialog.Builder builder    = new AlertDialog.Builder(MainActivity.this);
         ViewGroup           viewGroup  = findViewById(android.R.id.content);
         View                dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_dim, viewGroup, false);
@@ -224,6 +234,7 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
         cardView.setCardBackgroundColor(Color.argb(Integer.parseInt(device.getDim()), 255, 255, 0));
         dim = seekBar.getProgress();
         TextView tvResult = dialogView.findViewById(R.id.tvDim);
+        tvResult.setText(device.getDim());
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,
@@ -248,15 +259,15 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
 
         });
         builder.setView(dialogView);
+
         AlertDialog alertDialog = builder.create();
-        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         alertDialog.show();
+
         dialogView.findViewById(R.id.btnSend).setOnClickListener(view -> {
             Toast.makeText(MainActivity.this, device.getdType() + " DIM " + dim, Toast.LENGTH_SHORT).show();
 
             imageView.setColorFilter(Color.argb(dim, 255, 255, 0));
-            String message = "{\"command\":\"setDim\",\"ID\":\"" + device.getdId() + "\",\"dim\":\"" + dim + "\",\"projectId\":\"" + device.getpId() + "\",\"roomId\":\"" + device.getrId() + "\"}";
+            String message;// = "{\"command\":\"setDim\",\"ID\":\"" + device.getdId() + "\",\"dim\":\"" + dim + "\",\"projectId\":\"" + device.getpId() + "\",\"roomId\":\"" + device.getrId() + "\"}";
             message = "{\"masterId\":" + device.getdA1()
                     + ",\"command\":\"setDim\",\"attributes\":{\"lightID\":\"" + device.getdA0()
                     + "\",\"type\":\"" + device.getdA2()
@@ -266,6 +277,53 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
         });
     }
 
+    public void showAlertDialogButtonClicked(Device device, ImageView imageView) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Name");
+        View     customLayout = getLayoutInflater().inflate(R.layout.dialog_dim, null);
+        CardView cardView     = customLayout.findViewById(R.id.cardView);
+        SeekBar  seekBar      = customLayout.findViewById(R.id.seekBar);
+        seekBar.setProgress(Integer.parseInt(device.getDim()));
+        cardView.setCardBackgroundColor(Color.argb(Integer.parseInt(device.getDim()), 255, 255, 0));
+        dim = seekBar.getProgress();
+        TextView tvResult = customLayout.findViewById(R.id.tvDim);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress,
+                                          boolean fromUser) {
+                tvResult.setText(String.valueOf(progress));
+                dim = progress;
+                cardView.setCardBackgroundColor(Color.argb(progress, 255, 255, 0));
+                cardView.setPreventCornerOverlap(false);
+                cardView.setRadius(App.getInstance().dpToPx(30));
+//                Toast.makeText(activity, "seekbar progress: " + progress, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+//                Toast.makeText(activity, "seekbar touch started!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+//                Toast.makeText(activity, "seekbar touch stopped!", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+        builder.setView(customLayout);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(
+                    DialogInterface dialog,
+                    int which) {
+
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 
     public void showCurtainDialog(Device device) {
         AlertDialog.Builder builder    = new AlertDialog.Builder(MainActivity.this);
@@ -368,10 +426,8 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     showLog("Failed to subscribe");
                 }
-
             });
 
-//            mqttAndroidClient.subscribe(SessionManager.getTopic(), qos, MainActivity.this);
 
             mqttAndroidClient.setCallback(new MqttCallbackExtended() {
                 @Override
@@ -385,35 +441,32 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
                 @Override
                 public void messageArrived(String topic, MqttMessage message) {
                     showLog("Message Arrived SubScripted " + message.toString());
-
                     if (message.toString().contains("link")) {
                         initViews(message);
                     } else if (message.toString().contains("setDim")) {
-                        showLog("Message Arrived => Light Click");
+//                        showLog("Message Arrived => Light Click");
                         LightClick lightClick = gson.fromJson(message.toString(), LightClick.class);
-
                         for (Device device : devices) {
                             if (lightClick.getAttributes().getLightID().equals(device.getdA0())) {
                                 device.setDim(lightClick.getAttributes().getDimLevel());
                             }
                             addView(device);
                         }
-
                     } else if (message.toString().contains("scanResult")) {
                         LightsStatus lightsStatus = gson.fromJson(message.toString(), LightsStatus.class);
                         for (Device device : devices) {
                             boolean find = false;
                             for (ScanLight scanLight : lightsStatus.getScanResult()) {
                                 if (scanLight.getId().equals(String.valueOf(device.getdA0()))) {
-                                    showLog("scanResult -> " + scanLight.getId() + " " + device.getdA0());
+//                                    showLog("scanResult -> " + scanLight.getId() + " " + device.getdA0());
                                     device.setDim(scanLight.getDim());
                                     find = true;
                                 }
                             }
                             if (!find)
-                                device.setDim("0");
+                                device.setDim("50");
                             addView(device);
-                            showLog("messageArrived scanResult => " + device.getdType());
+//                            showLog("messageArrived scanResult => " + device.getdType());
                         }
                     } else {
                         try {
@@ -434,7 +487,6 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
                     }
                 }
 
@@ -493,8 +545,22 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
             try {
                 JSONArray jsonArray = new JSONArray(new String(message.getPayload()));
                 if (message.toString().contains("link")) {
-                    JSONObject obj      = jsonArray.getJSONObject(0);
-                    String     imageUrl = obj.getString("link");
+                    JSONObject obj = jsonArray.getJSONObject(0);
+                    showLog("room id : " + obj.getString("roomd_id"));
+
+                    String imageUrl = obj.getString("link");
+                    String roomId   = obj.getString("roomd_id");
+//                    if (SessionManager.getValue(roomId) == null) {
+//                        showLog("if " + roomId);
+////                        fileDownload(imageUrl, roomId);
+//                        fileDownload("https://static2.farakav.com/files/pictures/01676274.jpg", roomId);
+//                    } else {
+//                        File photo = new File(SessionManager.getValue(roomId));
+//                        if (photo.exists() && photo.isFile()) {
+//                            showLog("else " + roomId + " : " + SessionManager.getValue(roomId));
+//                            imageUrl = SessionManager.getValue(roomId);
+//                        }
+//                    }
                     viewModel.setImageUrl(imageUrl);
                 }
                 JSONArray deviceList = jsonArray.getJSONArray(1);
@@ -557,8 +623,8 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
         ViewGroup           viewGroup    = activity.findViewById(android.R.id.content);
         View                dialogView   = LayoutInflater.from(activity).inflate(R.layout.dialog_scene_title, viewGroup, false);
         EditText            etSceneTitle = dialogView.findViewById(R.id.etSceneTitle);
-        if (SessionManager.getSceneValue(scene.getSi()) != null)
-            etSceneTitle.setText(SessionManager.getSceneValue(scene.getSi()));
+        if (SessionManager.getValue(scene.getSi() + "*" + scene.getMi()) != null)
+            etSceneTitle.setText(SessionManager.getValue(scene.getSi() + "*" + scene.getMi()));
         builder.setView(dialogView);
         AlertDialog alertDialog = builder.create();
         alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -570,7 +636,8 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
                 return;
             }
             String sceneTitle = etSceneTitle.getText().toString();
-            SessionManager.setSceneValue(scene.getSi(), sceneTitle);
+
+            SessionManager.setValue(scene.getSi() + "*" + scene.getMi(), sceneTitle);
             alertDialog.dismiss();
             viewModel.setScenes(null);
             viewModel.setScenes(scenes);
@@ -581,4 +648,27 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
             alertDialog.dismiss();
         });
     }
+
+    public void fileDownload(String url, String photoName) {
+        File direct = new File(Environment.getExternalStorageDirectory() + "/" + getString(R.string.app_name));
+
+        if (!direct.exists()) {
+            direct.mkdirs();
+        }
+
+        DownloadManager mgr = (DownloadManager) this.getSystemService(Context.DOWNLOAD_SERVICE);
+
+        Uri downloadUri = Uri.parse(url);
+        DownloadManager.Request request = new DownloadManager.Request(
+                downloadUri);
+
+        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI
+                | DownloadManager.Request.NETWORK_MOBILE)
+                .setAllowedOverRoaming(false).setTitle("Demo")
+                .setDescription("Something useful. No, really.")
+                .setDestinationInExternalPublicDir("/" + getString(R.string.app_name), photoName + ".jpg");
+        mgr.enqueue(request);
+
+    }
+
 }

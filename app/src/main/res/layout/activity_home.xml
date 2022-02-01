@@ -18,7 +18,7 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardViewDate"
-            android:layout_width="210dp"
+            android:layout_width="230dp"
             android:layout_height="110dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
@@ -73,7 +73,7 @@
             initTasksItems="@{viewModel.taskModels}"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_margin="5dp"
+            android:layout_marginTop="5dp"
             app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
             app:layout_constraintEnd_toEndOf="@+id/cardViewDate"
             app:layout_constraintStart_toStartOf="@+id/cardViewDate"
@@ -83,7 +83,7 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardViewLocation"
-            android:layout_width="210dp"
+            android:layout_width="230dp"
             android:layout_height="110dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
@@ -166,7 +166,7 @@
             initFoodItems="@{viewModel.foods}"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
             app:layout_constraintEnd_toEndOf="@+id/cardViewLocation"
             app:layout_constraintStart_toStartOf="@+id/cardViewLocation"
@@ -177,7 +177,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
             android:layout_width="0dp"
-            android:layout_height="?actionBarSize"
+            android:layout_height="60dp"
             android:background="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

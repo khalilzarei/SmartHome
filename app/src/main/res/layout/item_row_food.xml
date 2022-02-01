@@ -10,47 +10,39 @@
             type="com.khz.smarthome.ui.home.FoodViewModel" />
     </data>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardRoom"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
-        android:layout_marginEnd="2dp"
-        android:layout_marginBottom="2dp"
+        android:layout_margin="3dp"
+        android:background="@drawable/shape"
         android:clickable="true"
         android:focusable="true"
         android:foreground="?android:attr/selectableItemBackground"
         android:onClick="@{viewModel::onFoodClick}"
-        app:cardCornerRadius="7dp">
+        app:cardCornerRadius="7dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cardRooms"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:gravity="center_vertical"
+            android:paddingStart="7dp"
+            android:paddingEnd="7dp"
+            android:src="@drawable/ic_check_circle" />
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/black"
-            app:cardCornerRadius="7dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/cardRooms"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:gravity="center_vertical"
-                android:paddingStart="7dp"
-                android:paddingEnd="7dp"
-                android:src="@drawable/ic_check_circle" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:padding="5dp"
-                android:text="@{viewModel.food.name}"
-                android:textColor="@color/white"
-                tools:text="@string/scenes" />
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@{viewModel.food.name}"
+            android:textColor="@color/text_color"
+            tools:text="@string/scenes" />
+    </LinearLayout>
 
 </layout>
 

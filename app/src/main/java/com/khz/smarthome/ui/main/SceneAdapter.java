@@ -42,8 +42,8 @@ public class SceneAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         final Scene scene = scenes.get(position);
         Log.e("Scene", "Scene id: " + scene.getId() + " " + scene.getSi() + " " + scene.getMi() + " " + scene.getName());
         ViewHolder viewHolder = (ViewHolder) holder;
-        if (SessionManager.getSceneValue(scene.getSi()) != null)
-            scene.setName(SessionManager.getSceneValue(scene.getSi()));
+        if (SessionManager.getValue(scene.getSi() + "*" + scene.getMi()) != null)
+            scene.setName(SessionManager.getValue(scene.getSi() + "*" + scene.getMi()));
         SceneViewModel viewModel = new SceneViewModel(scene);
 
         viewHolder.sceneItem.setViewModel(viewModel);

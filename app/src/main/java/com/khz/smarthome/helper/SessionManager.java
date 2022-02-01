@@ -12,6 +12,7 @@ import com.khz.smarthome.model.UserImage;
 public class SessionManager {
     private static final String PREF_NAME            = "TakeItFreePref";
     private static final String KEY_IS_LOGGED_IN     = "isLoggedIn";
+    private static final String KEY_ICON_SIZE        = "KEY_ICON_SIZE";
     public static        String KEY_IP_STATUS        = "ipStatus";
     public static        String KEY_SOUND_PLAY       = "sound_play";
     public static        String KEY_CHANGE_FONT      = "change_font";
@@ -191,12 +192,22 @@ public class SessionManager {
         editor.commit();
     }
 
-    public static String getSceneValue(int key) {
-        return pref.getString("scene" + key, null);
+    public static String getValue(String key) {
+        return pref.getString(key, null);
     }
 
-    public static void setSceneValue(int key, String value) {
-        editor.putString("scene" + key, value);
+
+    public static void setIconSize(int iconSize) {
+        editor.putInt(KEY_ICON_SIZE, iconSize);
+        editor.commit();
+    }
+
+    public static int getIconSize() {
+        return pref.getInt(KEY_ICON_SIZE, 60);
+    }
+
+    public static void setValue(String key, String value) {
+        editor.putString(key, value);
         editor.commit();
     }
 
