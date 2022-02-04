@@ -7,19 +7,19 @@ public class Attributes {
 
     @SerializedName("lightID")
     @Expose
-    private Integer lightID;
+    private String lightID;
     @SerializedName("type")
     @Expose
-    private String  type;
+    private String type;
     @SerializedName("dimLevel")
     @Expose
-    private String  dimLevel;
+    private String dimLevel;
 
-    public Integer getLightID() {
+    public String getLightID() {
         return lightID;
     }
 
-    public void setLightID(Integer lightID) {
+    public void setLightID(String lightID) {
         this.lightID = lightID;
     }
 

@@ -146,7 +146,7 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
                 else if (device.getdA2().equalsIgnoreCase("group"))
                     ty = "GP";
 
-                onOffMSG = "{\"masterId\":\"" + device.getdA1() + "\"," +
+                onOffMSG = "{\"masterId\":\"" + device.getMasterId() + "\"," +
                         "\"command\":\"setDim\"," +
                         "\"attributes\":{" +
                         "\"lightID\":\"" + device.getdA0() + "\"," +
@@ -259,7 +259,7 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
             public void onStopTrackingTouch(SeekBar seekBar) {
                 dim = seekBar.getProgress();
                 Log.e("onStopTrackingTouch", "Dim : " + dim);
-                String message = "{\"masterId\":" + device.getdA1()
+                String message = "{\"masterId\":" + device.getMasterId()
                         + ",\"command\":\"setDim\",\"attributes\":{\"lightID\":\"" + device.getdA0()
                         + "\",\"type\":\"" + device.getdA2()
                         + "\",\"dimLevel\":\"" + dim + "\"}}";
@@ -277,7 +277,7 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
 
             imageView.setColorFilter(Color.argb(dim, 255, 255, 0));
             String message;// = "{\"command\":\"setDim\",\"ID\":\"" + device.getdId() + "\",\"dim\":\"" + dim + "\",\"projectId\":\"" + device.getpId() + "\",\"roomId\":\"" + device.getrId() + "\"}";
-            message = "{\"masterId\":" + device.getdA1()
+            message = "{\"masterId\":" + device.getMasterId()
                     + ",\"command\":\"setDim\",\"attributes\":{\"lightID\":\"" + device.getdA0()
                     + "\",\"type\":\"" + device.getdA2()
                     + "\",\"dimLevel\":\"" + dim + "\"}}";
@@ -453,20 +453,26 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
                     if (message.toString().contains("link")) {
                         initViews(message);
                     } else if (message.toString().contains("setDim")) {
-//                        showLog("Message Arrived => Light Click");
+                        showLog("Message Published Message Arrived => Light Click setDim");
                         LightClick lightClick = gson.fromJson(message.toString(), LightClick.class);
                         for (Device device : devices) {
-                            if (lightClick.getAttributes().getLightID().equals(device.getdA0())) {
+
+                            if (device.getdA0().equals(lightClick.getAttributes().getLightID())
+                                    && device.getMasterId().equals(lightClick.getMasterId())
+                            ) {
                                 device.setDim(lightClick.getAttributes().getDimLevel());
                             }
                             addView(device);
                         }
                     } else if (message.toString().contains("scanResult")) {
+                        showLog("Message Published Message Arrived => scanResult");
                         LightsStatus lightsStatus = gson.fromJson(message.toString(), LightsStatus.class);
                         for (Device device : devices) {
                             boolean find = false;
                             for (ScanLight scanLight : lightsStatus.getScanResult()) {
-                                if (scanLight.getId().equals(String.valueOf(device.getdA0()))) {
+                                if (scanLight.getId().equals(String.valueOf(device.getdA0()))
+                                        && lightsStatus.getMasterId().equals(device.getMasterId())
+                                ) {
 //                                    showLog("scanResult -> " + scanLight.getId() + " " + device.getdA0());
                                     device.setDim(scanLight.getDim());
                                     find = true;
@@ -517,15 +523,16 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
             encodedPayload = msg.getBytes(StandardCharsets.UTF_8);
             MqttMessage message = new MqttMessage(encodedPayload);
             message.setRetained(true);
-            mqttAndroidClient.publish(publishTopic, message);
-            showLog("Message Published " + publishTopic + " message: " + message.toString());
+            IMqttDeliveryToken iMqttDeliveryToken = mqttAndroidClient.publish(publishTopic, message);
+            MqttMessage        mqttMessage        = iMqttDeliveryToken.getMessage();
+            showLog("Message Published " + publishTopic + " message: " + message + " mqttMessage: " + mqttMessage);
+            LightClick lightClick = gson.fromJson(mqttMessage.toString(), LightClick.class);
             if (message.toString().contains("setDim") && message.toString().contains("dimLevel")) {
-                LightClick lightClick = gson.fromJson(message.toString(), LightClick.class);
                 for (Device device : devices) {
-                    showLog("messageArrived setDim => A0: " + device.getdA0() + " - LightID: " + lightClick.getAttributes().getLightID());
-                    if (device.getdA0().equalsIgnoreCase(String.valueOf(lightClick.getAttributes().getLightID()))) {
+                    if (device.getdA0().equals(String.valueOf(lightClick.getAttributes().getLightID()))
+                            && device.getMasterId().equals(String.valueOf(lightClick.getMasterId()))
+                    ) {
                         device.setDim(lightClick.getAttributes().getDimLevel());
-                        showLog("messageArrived setDim => " + device.getDim() + " - " + lightClick.getAttributes().getDimLevel());
                     }
                     addView(device);
                 }

@@ -11,11 +11,11 @@ public class Device {
     @SerializedName("d_type")
     private String  dType;
     @SerializedName("d_a0")
-    private String  dA0;
+    private String dA0;
     @SerializedName("d_a1")
-    private String  dA1;
+    private String masterId;
     @SerializedName("d_a2")
-    private String  dA2;
+    private String dA2;
     @SerializedName("r_id")
     private Integer rId;
     @SerializedName("p_id")
@@ -77,12 +77,12 @@ public class Device {
         this.dA0 = dA0;
     }
 
-    public String getdA1() {
-        return dA1;
+    public String getMasterId() {
+        return masterId;
     }
 
-    public void setdA1(String dA1) {
-        this.dA1 = dA1;
+    public void setMasterId(String masterId) {
+        this.masterId = masterId;
     }
 
     public String getdA2() {
@@ -212,7 +212,7 @@ public class Device {
                 ", dId=" + dId +
                 ", dType='" + dType + '\'' +
                 ", dA0='" + dA0 + '\'' +
-                ", dA1='" + dA1 + '\'' +
+                ", dA1='" + masterId + '\'' +
                 ", dA2='" + dA2 + '\'' +
                 ", rId=" + rId +
                 ", pId=" + pId +

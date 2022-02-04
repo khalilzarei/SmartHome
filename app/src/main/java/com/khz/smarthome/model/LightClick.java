@@ -1,23 +1,25 @@
 package com.khz.smarthome.model;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class LightClick {
 
-    @SerializedName("masterid")
-    private Integer masterId;
-
+    @SerializedName("masterId")
+    @Expose
+    private String masterId;
     @SerializedName("command")
+    @Expose
     private String command;
-
     @SerializedName("attributes")
+    @Expose
     private Attributes attributes;
 
-    public Integer getMasterId() {
+    public String getMasterId() {
         return masterId;
     }
 
-    public void setMasterId(Integer masterId) {
+    public void setMasterId(String masterId) {
         this.masterId = masterId;
     }
 
