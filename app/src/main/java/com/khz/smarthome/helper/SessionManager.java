@@ -15,6 +15,8 @@ public class SessionManager {
     private static final String KEY_IS_LOGGED_IN     = "isLoggedIn";
     private static final String KEY_ICON_SIZE        = "KEY_ICON_SIZE";
     private static final String KEY_ICON_RES_ID      = "KEY_ICON_RES_ID";
+    private static final String KEY_RGBW_DEVICE_A0   = "rgbwDeviceA0";
+    private static final String KEY_RGBW_MASTER_ID   = "key_rgbw_master_id";
     public static        String KEY_IP_STATUS        = "ipStatus";
     public static        String KEY_SOUND_PLAY       = "sound_play";
     public static        String KEY_CHANGE_FONT      = "change_font";
@@ -231,6 +233,26 @@ public class SessionManager {
     public static void setIsNightModeOn(boolean isLoggedIn) {
         editor.putBoolean(KEY_IS_NIGHT_MODE, isLoggedIn);
         editor.commit();
+    }
+
+//rgbwDeviceA0 = null, rgbwMasterID
+
+    public static void setRgbwDeviceA0(String rgbwDeviceA0) {
+        editor.putString(KEY_RGBW_DEVICE_A0, rgbwDeviceA0);
+        editor.commit();
+    }
+
+    public static String getRgbwDeviceA0() {
+        return pref.getString(KEY_RGBW_DEVICE_A0, null);
+    }
+
+    public static void setRgbwMasterID(String rgbwMasterID) {
+        editor.putString(KEY_RGBW_MASTER_ID, rgbwMasterID);
+        editor.commit();
+    }
+
+    public static String getRgbwMasterID() {
+        return pref.getString(KEY_RGBW_MASTER_ID, null);
     }
 
 }

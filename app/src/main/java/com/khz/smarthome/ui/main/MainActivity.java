@@ -1,15 +1,12 @@
 package com.khz.smarthome.ui.main;
 
-import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
@@ -18,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -31,6 +29,7 @@ import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.databinding.DataBindingUtil;
 
+import com.flask.colorpicker.ColorPickerView;
 import com.google.gson.Gson;
 import com.khz.smarthome.R;
 import com.khz.smarthome.application.App;
@@ -56,7 +55,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,11 +69,13 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
     RelativeLayout   container;
     ConstraintLayout rootLayout;
     public int dim = -1;
+    int white = 0, red = 0, green = 0, blue = 0;
 
     List<Device> devices = new ArrayList<>();
     List<Scene>  scenes  = new ArrayList<>();
     List<Room>   rooms   = new ArrayList<>();
     Gson         gson    = new Gson();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,25 +103,39 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
             layoutParams.setMarginStart(getRealLeft(device.getL() - 5));
         layoutParams.topMargin = getRealTop(device.getT());
 
-        showLog("Dim : " + device.getDim());
+        showLog("Type : " + device.getBc() + " - " + device.getBg());
 //        layoutParams.setMargins(getRealLeft(device.getL()), getRealTop(device.getT()), 0, 0);
         layoutParams.width  = SessionManager.getIconSize();
         layoutParams.height = SessionManager.getIconSize();
-
         imageView.setLayoutParams(layoutParams);
+        float scale      = getResources().getDisplayMetrics().density;
+        int   dpAsPixels = (int) (7 * scale + 0.5f);
+        imageView.setPadding(dpAsPixels, dpAsPixels, dpAsPixels, dpAsPixels);
+        int imgRes = lampIconId;
 
-        int imgRes = R.drawable.ic_room;
         if (device.getdType().equalsIgnoreCase("Dali Light")) {
-            showLog("Dali Light Dim : " + device.getDim());
-            imgRes = lampIconId;
             if (device.getDim().equals("0"))
                 imageView.setColorFilter(Color.argb(50, 255, 255, 0));
             else
                 imageView.setColorFilter(Color.argb(Integer.parseInt(device.getDim()), 255, 255, 0));
+
+            if (device.getdA2().equalsIgnoreCase("RGBW")) {
+                showLog("RGBW => "
+                        + "  getdA0: " + device.getdA0()
+                        + "  rgbwDeviceA0:" + SessionManager.getRgbwDeviceA0()
+                        + "  MasterId:" + device.getMasterId()
+                        + "  rgbwMasterID:" + SessionManager.getRgbwMasterID()
+                );
+                if (device.getdA0().equals(SessionManager.getRgbwDeviceA0())
+                        && device.getMasterId().equals(SessionManager.getRgbwMasterID())
+                )
+                    imageView.setColorFilter(Color.argb(white, red, green, blue));
+            }
         } else if (device.getdType().equalsIgnoreCase("Room"))
             imgRes = R.drawable.ic_room;
-        else if (device.getdType().equalsIgnoreCase("curtain"))
+        else if (device.getdType().equalsIgnoreCase("curtain")) {
             imgRes = R.drawable.ic_curtain;
+        }
 
         imageView.setImageResource(imgRes);
         container.addView(imageView);
@@ -132,10 +146,8 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
                 int dim;
                 imageView.setImageResource(lampIconId);
                 if (device.getDim().equals("0")) {
-                    showLog("off");
                     dim = 50;
                 } else {
-                    showLog("on");
                     dim = 255;
                 }
 
@@ -172,7 +184,9 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
         });
 
         imageView.setOnLongClickListener(view -> {
-            if (device.getdType().equalsIgnoreCase("Dali Light"))
+            if (device.getdA2().equalsIgnoreCase("RGBW"))
+                showColorPicker(device, (ImageView) view);
+            else if (device.getdType().equalsIgnoreCase("Dali Light"))
                 showDimDialog(device, (ImageView) view);
             else if (device.getdType().equalsIgnoreCase("curtain")) {
                 showCurtainDialog(device);
@@ -230,7 +244,7 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
         ViewGroup           viewGroup  = findViewById(android.R.id.content);
         View                dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_dim, viewGroup, false);
         CardView            cardView   = dialogView.findViewById(R.id.cardView);
-        SeekBar             seekBar    = dialogView.findViewById(R.id.seekBar);
+        SeekBar             seekBar    = dialogView.findViewById(R.id.mySeekBar);
         seekBar.setProgress(Integer.parseInt(device.getDim()));
         cardView.setCardBackgroundColor(Color.argb(Integer.parseInt(device.getDim()), 255, 255, 0));
         dim = seekBar.getProgress();
@@ -240,48 +254,178 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
-                tvResult.setText(String.valueOf(progress));
-                dim = progress;
-                cardView.setCardBackgroundColor(Color.argb(progress, 255, 255, 0));
-                cardView.setPreventCornerOverlap(false);
-                cardView.setRadius(App.getInstance().dpToPx(30));
+                if (progress >= 0 && progress <= 255) {
+                    tvResult.setText(String.valueOf(progress));
+                    dim = progress;
+                    cardView.setCardBackgroundColor(Color.argb(progress, 255, 255, 0));
+                    cardView.setPreventCornerOverlap(false);
+                    cardView.setRadius(App.getInstance().dpToPx(30));
+                }
 //                Toast.makeText(activity, "seekbar progress: " + progress, Toast.LENGTH_SHORT).show();
             }
 
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-//                Toast.makeText(activity, "seekbar touch started!", Toast.LENGTH_SHORT).show();
-                Log.e("onStopTrackingTouch", "onStartTrackingTouch Dim : " + dim);
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                dim = seekBar.getProgress();
-                Log.e("onStopTrackingTouch", "Dim : " + dim);
-                String message = "{\"masterId\":" + device.getMasterId()
-                        + ",\"command\":\"setDim\",\"attributes\":{\"lightID\":\"" + device.getdA0()
-                        + "\",\"type\":\"" + device.getdA2()
-                        + "\",\"dimLevel\":\"" + dim + "\"}}";
-                publishMessage(message, Constants.DALI_IN);
+                int progress = seekBar.getProgress();
+                if (progress >= 0 && progress <= 255) {
+                    dim = seekBar.getProgress();
+                    String ty = "ID";
+                    if (device.getdA2().equalsIgnoreCase("single"))
+                        ty = "ID";
+                    else if (device.getdA2().equalsIgnoreCase("group"))
+                        ty = "GP";
+                    Log.e("onStopTrackingTouch", "Dim : " + dim);
+                    String message = "{\"masterId\":" + device.getMasterId()
+                            + ",\"command\":\"setDim\",\"attributes\":{\"lightID\":\"" + device.getdA0()
+                            + "\",\"type\":\"" + ty
+                            + "\",\"dimLevel\":\"" + dim + "\"}}";
+                    publishMessage(message, Constants.DALI_IN);
+                }
             }
 
         });
         builder.setView(dialogView);
 
         AlertDialog alertDialog = builder.create();
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         alertDialog.show();
 
         dialogView.findViewById(R.id.btnSend).setOnClickListener(view -> {
             Toast.makeText(MainActivity.this, device.getdType() + " DIM " + dim, Toast.LENGTH_SHORT).show();
+            if (dim >= 0 && dim <= 255) {
+                String ty = "ID";
+                if (device.getdA2().equalsIgnoreCase("single"))
+                    ty = "ID";
+                else if (device.getdA2().equalsIgnoreCase("group"))
+                    ty = "GP";
+                imageView.setColorFilter(Color.argb(dim, 255, 255, 0));
+                String message;// = "{\"command\":\"setDim\",\"ID\":\"" + device.getdId() + "\",\"dim\":\"" + dim + "\",\"projectId\":\"" + device.getpId() + "\",\"roomId\":\"" + device.getrId() + "\"}";
+                message = "{\"masterId\":" + device.getMasterId()
+                        + ",\"command\":\"setDim\",\"attributes\":{\"lightID\":\"" + device.getdA0()
+                        + "\",\"type\":\"" + ty
+                        + "\",\"dimLevel\":\"" + dim + "\"}}";
+                publishMessage(message, Constants.DALI_IN);
+            }
+            alertDialog.dismiss();
+        });
+    }
 
-            imageView.setColorFilter(Color.argb(dim, 255, 255, 0));
-            String message;// = "{\"command\":\"setDim\",\"ID\":\"" + device.getdId() + "\",\"dim\":\"" + dim + "\",\"projectId\":\"" + device.getpId() + "\",\"roomId\":\"" + device.getrId() + "\"}";
-            message = "{\"masterId\":" + device.getMasterId()
-                    + ",\"command\":\"setDim\",\"attributes\":{\"lightID\":\"" + device.getdA0()
-                    + "\",\"type\":\"" + device.getdA2()
-                    + "\",\"dimLevel\":\"" + dim + "\"}}";
-            publishMessage(message, Constants.DALI_IN);
+
+    public void showColorPicker(Device device, ImageView imageView) {
+
+        SessionManager.setRgbwDeviceA0(null);
+        SessionManager.setRgbwMasterID(null);
+        AlertDialog.Builder builder    = new AlertDialog.Builder(MainActivity.this);
+        ViewGroup           viewGroup  = findViewById(android.R.id.content);
+        View                dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_color_picker, viewGroup, false);
+
+        ColorPickerView colorPickerView = dialogView.findViewById(R.id.colorPickerView);
+        CardView        cardViewColor   = dialogView.findViewById(R.id.cardViewColor);
+        CardView        cardViewWhite   = dialogView.findViewById(R.id.cardViewWhite);
+        TextView        tvWhite         = dialogView.findViewById(R.id.tvWhite);
+        Button          btnSetColor     = dialogView.findViewById(R.id.btnSetColor);
+        SeekBar         seekBar         = dialogView.findViewById(R.id.mySeekBar);
+        tvWhite.setText(device.getDim());
+        seekBar.setProgress(Integer.parseInt(device.getDim()));
+        cardViewWhite.setCardBackgroundColor(Color.argb(Integer.parseInt(device.getDim()), 255, 255, 255));
+        white = seekBar.getProgress();
+
+        colorPickerView.addOnColorSelectedListener(selectedColor -> {
+            String colorT = "#" + Integer.toHexString(selectedColor);
+            red   = (selectedColor >> 16) & 0xFF;
+            green = (selectedColor >> 8) & 0xFF;
+            blue  = (selectedColor) & 0xFF;
+            int alpha = (selectedColor >> 24) & 0xFF;
+
+            int color = Color.argb(alpha, red, green, blue);
+            cardViewColor.setCardBackgroundColor(color);
+
+        });
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress,
+                                          boolean fromUser) {
+                if (progress >= 0 && progress <= 255) {
+                    tvWhite.setText(String.valueOf(progress));
+                    white = progress;
+                    cardViewWhite.setCardBackgroundColor(Color.argb(progress, 255, 255, 255));
+                    cardViewWhite.setPreventCornerOverlap(false);
+                    cardViewWhite.setRadius(App.getInstance().dpToPx(30));
+                }
+            }
+
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+
+        });
+        builder.setView(dialogView);
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertDialog.show();
+
+        btnSetColor.setOnClickListener(view -> {
+            SessionManager.setRgbwDeviceA0(device.getdA0());
+            SessionManager.setRgbwMasterID(device.getMasterId());
+
+            Toast.makeText(MainActivity.this, device.getdType() + " DIM " + white, Toast.LENGTH_SHORT).show();
+            if (white >= 0 && white <= 255) {
+                String ty = "ID";
+                if (device.getdA2().equalsIgnoreCase("single"))
+                    ty = "ID";
+                else if (device.getdA2().equalsIgnoreCase("group"))
+                    ty = "GP";
+                imageView.setColorFilter(Color.argb(white, red, green, blue));
+
+                String message = "{\"masterId\":" + device.getMasterId()
+                        + ",\"command\":\"setDim\","
+                        + "\"attributes\":{"
+                        + "\"lightID\":\"" + Integer.parseInt(device.getdA0())
+                        + "\",\"type\":\"" + ty
+                        + "\",\"dimLevel\":\"" + red + "\"}"
+                        + "}";
+                publishMessage(message, Constants.DALI_IN);
+
+                message = "{\"masterId\":" + device.getMasterId()
+                        + ",\"command\":\"setDim\","
+                        + "\"attributes\":{"
+                        + "\"lightID\":\"" + (Integer.parseInt(device.getdA0()) + 1)
+                        + "\",\"type\":\"" + ty
+                        + "\",\"dimLevel\":\"" + green + "\"}"
+                        + "}";
+                publishMessage(message, Constants.DALI_IN);
+
+                message = "{\"masterId\":" + device.getMasterId()
+                        + ",\"command\":\"setDim\","
+                        + "\"attributes\":{"
+                        + "\"lightID\":\"" + (Integer.parseInt(device.getdA0()) + 2)
+                        + "\",\"type\":\"" + ty
+                        + "\",\"dimLevel\":\"" + blue + "\"}"
+                        + "}";
+                publishMessage(message, Constants.DALI_IN);
+
+                message = "{\"masterId\":" + device.getMasterId()
+                        + ",\"command\":\"setDim\","
+                        + "\"attributes\":{"
+                        + "\"lightID\":\"" + (Integer.parseInt(device.getdA0()) + 3)
+                        + "\",\"type\":\"" + ty
+                        + "\",\"dimLevel\":\"" + white + "\"}"
+                        + "}";
+                publishMessage(message, Constants.DALI_IN);
+            }
             alertDialog.dismiss();
         });
     }
@@ -291,7 +435,7 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
         builder.setTitle("Name");
         View     customLayout = getLayoutInflater().inflate(R.layout.dialog_dim, null);
         CardView cardView     = customLayout.findViewById(R.id.cardView);
-        SeekBar  seekBar      = customLayout.findViewById(R.id.seekBar);
+        SeekBar  seekBar      = customLayout.findViewById(R.id.mySeekBar);
         seekBar.setProgress(Integer.parseInt(device.getDim()));
         cardView.setCardBackgroundColor(Color.argb(Integer.parseInt(device.getDim()), 255, 255, 0));
         dim = seekBar.getProgress();
@@ -456,7 +600,6 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
                         showLog("Message Published Message Arrived => Light Click setDim");
                         LightClick lightClick = gson.fromJson(message.toString(), LightClick.class);
                         for (Device device : devices) {
-
                             if (device.getdA0().equals(lightClick.getAttributes().getLightID())
                                     && device.getMasterId().equals(lightClick.getMasterId())
                             ) {
@@ -663,28 +806,6 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
         dialogView.findViewById(R.id.btnClose).setOnClickListener(view -> {
             alertDialog.dismiss();
         });
-    }
-
-    public void fileDownload(String url, String photoName) {
-        File direct = new File(Environment.getExternalStorageDirectory() + "/" + getString(R.string.app_name));
-
-        if (!direct.exists()) {
-            direct.mkdirs();
-        }
-
-        DownloadManager mgr = (DownloadManager) this.getSystemService(Context.DOWNLOAD_SERVICE);
-
-        Uri downloadUri = Uri.parse(url);
-        DownloadManager.Request request = new DownloadManager.Request(
-                downloadUri);
-
-        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI
-                | DownloadManager.Request.NETWORK_MOBILE)
-                .setAllowedOverRoaming(false).setTitle("Demo")
-                .setDescription("Something useful. No, really.")
-                .setDestinationInExternalPublicDir("/" + getString(R.string.app_name), photoName + ".jpg");
-        mgr.enqueue(request);
-
     }
 
 }
