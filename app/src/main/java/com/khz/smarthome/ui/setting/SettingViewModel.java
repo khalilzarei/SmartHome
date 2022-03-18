@@ -152,12 +152,12 @@ public class SettingViewModel extends BaseObservable {
     //Gone    => 8
 
     public void setIp(View v) {
-        AlertDialog.Builder builder    = new AlertDialog.Builder(activity);
-        ViewGroup           viewGroup  = activity.findViewById(android.R.id.content);
-        View                dialogView = LayoutInflater.from(activity).inflate(R.layout.dialog_set_ip, viewGroup, false);
-        EditText            etIP       = dialogView.findViewById(R.id.etIP);
-        EditText            etTopic    = dialogView.findViewById(R.id.etTopic);
-        etTopic.setText(SessionManager.getProjectId());
+        AlertDialog.Builder builder     = new AlertDialog.Builder(activity);
+        ViewGroup           viewGroup   = activity.findViewById(android.R.id.content);
+        View                dialogView  = LayoutInflater.from(activity).inflate(R.layout.dialog_set_ip, viewGroup, false);
+        EditText            etIP        = dialogView.findViewById(R.id.etIP);
+        EditText            etProjectId = dialogView.findViewById(R.id.etProjectId);
+        etProjectId.setText(SessionManager.getProjectId());
         if (!SessionManager.getIP().isEmpty())
             etIP.setText(SessionManager.getIP());
         else
@@ -172,17 +172,19 @@ public class SettingViewModel extends BaseObservable {
                 Toast.makeText(activity, "Please Enter IP", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (etTopic.getText().toString().isEmpty()) {
+            if (etProjectId.getText().toString().isEmpty()) {
                 Toast.makeText(activity, "Please Enter Topic", Toast.LENGTH_SHORT).show();
                 return;
             }
+
             String ip = etIP.getText().toString();
             if (!ip.contains("tcp"))
                 ip = "tcp://" + ip + ":1883";
-            String topic = etTopic.getText().toString();
+
             SessionManager.setIsLoggedIn(true);
             SessionManager.setIp(ip);
-            SessionManager.setProjectId(topic);
+            String projectId = etProjectId.getText().toString();
+            SessionManager.setProjectId(projectId);
             SessionManager.setIpStatus(View.GONE);
             setIpStatus(View.GONE);
             counter = 0;

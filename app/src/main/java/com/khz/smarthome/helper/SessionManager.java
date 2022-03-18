@@ -17,6 +17,7 @@ public class SessionManager {
     private static final String KEY_ICON_RES_ID      = "KEY_ICON_RES_ID";
     private static final String KEY_RGBW_DEVICE_A0   = "rgbwDeviceA0";
     private static final String KEY_RGBW_MASTER_ID   = "key_rgbw_master_id";
+    private static final String KEY_CLICKED          = "clicked";
     public static        String KEY_IP_STATUS        = "ipStatus";
     public static        String KEY_SOUND_PLAY       = "sound_play";
     public static        String KEY_CHANGE_FONT      = "change_font";
@@ -58,6 +59,15 @@ public class SessionManager {
 
     public static void setIsLoggedIn(boolean loggedIn) {
         editor.putBoolean(KEY_IS_LOGGED_IN, loggedIn);
+        editor.commit();
+    }
+
+    public static boolean getClicked() {
+        return pref.getBoolean(KEY_CLICKED, false);
+    }
+
+    public static void setClicked(boolean clicked) {
+        editor.putBoolean(KEY_CLICKED, clicked);
         editor.commit();
     }
 

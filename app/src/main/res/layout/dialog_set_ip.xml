@@ -33,7 +33,7 @@
         android:textColorHint="#666666" />
 
     <EditText
-        android:id="@+id/etTopic"
+        android:id="@+id/etProjectId"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginTop="10dp"

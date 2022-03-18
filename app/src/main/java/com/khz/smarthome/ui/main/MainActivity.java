@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
@@ -103,8 +104,6 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
             layoutParams.setMarginStart(getRealLeft(device.getL() - 5));
         layoutParams.topMargin = getRealTop(device.getT());
 
-        showLog("Type : " + device.getBc() + " - " + device.getBg());
-//        layoutParams.setMargins(getRealLeft(device.getL()), getRealTop(device.getT()), 0, 0);
         layoutParams.width  = SessionManager.getIconSize();
         layoutParams.height = SessionManager.getIconSize();
         imageView.setLayoutParams(layoutParams);
@@ -114,22 +113,24 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
         int imgRes = lampIconId;
 
         if (device.getdType().equalsIgnoreCase("Dali Light")) {
+
+            if (device.getdA2().equalsIgnoreCase("RGBW")) {
+                imgRes = R.drawable.ic_rgbw;
+            } else
+                imgRes = lampIconId;
+
             if (device.getDim().equals("0"))
                 imageView.setColorFilter(Color.argb(50, 255, 255, 0));
             else
                 imageView.setColorFilter(Color.argb(Integer.parseInt(device.getDim()), 255, 255, 0));
 
-            if (device.getdA2().equalsIgnoreCase("RGBW")) {
-                showLog("RGBW => "
-                        + "  getdA0: " + device.getdA0()
-                        + "  rgbwDeviceA0:" + SessionManager.getRgbwDeviceA0()
-                        + "  MasterId:" + device.getMasterId()
-                        + "  rgbwMasterID:" + SessionManager.getRgbwMasterID()
-                );
+
+            if (!SessionManager.getClicked() && device.getdA2().equalsIgnoreCase("RGBW")) {
+
                 if (device.getdA0().equals(SessionManager.getRgbwDeviceA0())
                         && device.getMasterId().equals(SessionManager.getRgbwMasterID())
                 )
-                    imageView.setColorFilter(Color.argb(white, red, green, blue));
+                    imageView.setColorFilter(Color.argb(Math.max(white, 50), red, green, blue));
             }
         } else if (device.getdType().equalsIgnoreCase("Room"))
             imgRes = R.drawable.ic_room;
@@ -142,7 +143,10 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
 
         imageView.setOnClickListener(v -> {
             String onOffMSG = "";
+            SessionManager.setClicked(false);
             if (device.getdType().equalsIgnoreCase("Dali Light")) {
+                if (device.getdA2().equalsIgnoreCase("RGBW"))
+                    SessionManager.setClicked(true);
                 int dim;
                 imageView.setImageResource(lampIconId);
                 if (device.getDim().equals("0")) {
@@ -390,41 +394,48 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
                     ty = "GP";
                 imageView.setColorFilter(Color.argb(white, red, green, blue));
 
-                String message = "{\"masterId\":" + device.getMasterId()
-                        + ",\"command\":\"setDim\","
-                        + "\"attributes\":{"
-                        + "\"lightID\":\"" + Integer.parseInt(device.getdA0())
-                        + "\",\"type\":\"" + ty
-                        + "\",\"dimLevel\":\"" + red + "\"}"
-                        + "}";
-                publishMessage(message, Constants.DALI_IN);
+                new Handler().postDelayed(() -> {
+                    String message = "{\"masterId\":" + device.getMasterId()
+                            + ",\"command\":\"setDim\","
+                            + "\"attributes\":{"
+                            + "\"lightID\":\"" + Integer.parseInt(device.getdA0())
+                            + "\",\"type\":\"ID\",\"dimLevel\":\"" + red + "\"}"
+                            + "}";
+                    publishMessage(message, Constants.DALI_IN);
+                }, 200);
 
-                message = "{\"masterId\":" + device.getMasterId()
-                        + ",\"command\":\"setDim\","
-                        + "\"attributes\":{"
-                        + "\"lightID\":\"" + (Integer.parseInt(device.getdA0()) + 1)
-                        + "\",\"type\":\"" + ty
-                        + "\",\"dimLevel\":\"" + green + "\"}"
-                        + "}";
-                publishMessage(message, Constants.DALI_IN);
+                new Handler().postDelayed(() -> {
+                    String message = "{\"masterId\":" + device.getMasterId()
+                            + ",\"command\":\"setDim\","
+                            + "\"attributes\":{"
+                            + "\"lightID\":\"" + Integer.parseInt(device.getdA0() + 1)
+                            + "\",\"type\":\"ID\",\"dimLevel\":\"" + green + "\"}"
+                            + "}";
+                    publishMessage(message, Constants.DALI_IN);
+                }, 200);
 
-                message = "{\"masterId\":" + device.getMasterId()
-                        + ",\"command\":\"setDim\","
-                        + "\"attributes\":{"
-                        + "\"lightID\":\"" + (Integer.parseInt(device.getdA0()) + 2)
-                        + "\",\"type\":\"" + ty
-                        + "\",\"dimLevel\":\"" + blue + "\"}"
-                        + "}";
-                publishMessage(message, Constants.DALI_IN);
+                new Handler().postDelayed(() -> {
+                    String message = "{\"masterId\":" + device.getMasterId()
+                            + ",\"command\":\"setDim\","
+                            + "\"attributes\":{"
+                            + "\"lightID\":\"" + Integer.parseInt(device.getdA0() + 2)
+                            + "\",\"type\":\"ID\",\"dimLevel\":\"" + blue + "\"}"
+                            + "}";
+                    publishMessage(message, Constants.DALI_IN);
+                }, 200);
 
-                message = "{\"masterId\":" + device.getMasterId()
-                        + ",\"command\":\"setDim\","
-                        + "\"attributes\":{"
-                        + "\"lightID\":\"" + (Integer.parseInt(device.getdA0()) + 3)
-                        + "\",\"type\":\"" + ty
-                        + "\",\"dimLevel\":\"" + white + "\"}"
-                        + "}";
-                publishMessage(message, Constants.DALI_IN);
+                new Handler().postDelayed(() -> {
+                    String message = "{\"masterId\":" + device.getMasterId()
+                            + ",\"command\":\"setDim\","
+                            + "\"attributes\":{"
+                            + "\"lightID\":\"" + Integer.parseInt(device.getdA0() + 3)
+                            + "\",\"type\":\"ID\",\"dimLevel\":\"" + white + "\"}"
+                            + "}";
+                    publishMessage(message, Constants.DALI_IN);
+                }, 200);
+
+                SessionManager.setClicked(false);
+
             }
             alertDialog.dismiss();
         });
@@ -518,8 +529,9 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
 
         if (SessionManager.isLoggedIn())
             url = SessionManager.getIP();
-        mqttAndroidClient = new MqttAndroidClient(
-                MainActivity.this, url, Constants.clientId);
+
+        mqttAndroidClient = new MqttAndroidClient(MainActivity.this,
+                url, Constants.clientId);
 
         mqttAndroidClient.setCallback(new MqttCallbackExtended() {
             @Override
@@ -561,8 +573,6 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
         } catch (MqttException e) {
             e.printStackTrace();
         }
-
-
     }
 
     public void subscribeToTopic(String topic) {
@@ -662,6 +672,7 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
 
     public void publishMessage(String msg, String publishTopic) {
         byte[] encodedPayload;
+        container.removeAllViews();
         try {
             encodedPayload = msg.getBytes(StandardCharsets.UTF_8);
             MqttMessage message = new MqttMessage(encodedPayload);
@@ -680,6 +691,10 @@ public class MainActivity extends BaseActivity implements RoomAdapter.RoomClickL
                     addView(device);
                 }
             }
+//            else
+//                for (Device device : devices) {
+//                    addView(device);
+//                }
 
         } catch (Exception e) {
             showLog("Error Publishing: " + e.getMessage());

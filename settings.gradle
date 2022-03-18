@@ -1,2 +1,2 @@
 include ':app'
-rootProject.name = "SmartHome"
+rootProject.name = "SmartHome MQTT"
